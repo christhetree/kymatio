@@ -1,3 +1,5 @@
+from typing import Any, Tuple
+from torch import Tensor as T
 import torch
 from torch.autograd import Function
 
@@ -29,7 +31,8 @@ class ModulusStable(Function):
         zero).
     """
     @staticmethod
-    def forward(ctx, x):
+    # def forward(ctx, x):
+    def forward(x: T) -> T:
         """Forward pass of the modulus.
 
         This is a static method which does not require an instantiation of the
@@ -50,13 +53,16 @@ class ModulusStable(Function):
             This contains the modulus computed along the last axis, with that
             axis removed.
         """
-        ctx.p = 2
-        ctx.dim = -1
-        ctx.keepdim = False
+        # ctx.p = 2
+        # ctx.dim = -1
+        # ctx.keepdim = False
+
+        eps = 1e-12
+        x = torch.where(x < 0, x - eps, x + eps)
 
         output = (x[...,0] * x[...,0] + x[...,1] * x[...,1]).sqrt()
 
-        ctx.save_for_backward(x, output)
+        # ctx.save_for_backward(x, output)
 
         return output
 
@@ -94,6 +100,17 @@ class ModulusStable(Function):
         grad_input.masked_fill_(output == 0, 0)
 
         return grad_input
+
+    @staticmethod
+    def setup_context(ctx: Any, inputs: Tuple[Any, ...], output: Any) -> None:
+        ctx.p = 2
+        ctx.dim = -1
+        ctx.keepdim = False
+        (x,) = inputs
+        eps = 1e-12
+        x = torch.where(x < 0, x - eps, x + eps)
+        ctx.save_for_backward(x, output)
+        return output
 
 
 class TorchBackend:
