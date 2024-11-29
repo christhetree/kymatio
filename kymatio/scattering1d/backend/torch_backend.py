@@ -106,8 +106,8 @@ class TorchBackend1D(TorchBackend):
         return x[..., i0:i1]
 
     @classmethod
-    def cfft(cls, x, eps: float = 1e-12):
-        # Eps added to prevent NaNs in the backward pass of torch.fft.fft
+    def cfft(cls, x):
+        # Eps could be added to prevent NaNs in the backward pass of torch.fft.fft
         # https://discuss.pytorch.org/t/svt-backward-error-for-low-rank-structure/192397
         # https://github.com/wangleiphy/tensorgrad/blob/master/tensornets/adlib/svd.py
         # https://stackoverflow.com/questions/65932593/unable-to-backpropagate-through-torch-rfft
@@ -121,8 +121,8 @@ class TorchBackend1D(TorchBackend):
     # we cast to complex here then fft rather than use torch.rfft as torch.rfft is
     # inefficent.
     @classmethod
-    def rfft(cls, x, eps: float = 1e-12):
-        # Eps added to prevent NaNs in the backward pass of torch.fft.fft
+    def rfft(cls, x):
+        # Eps could be added to prevent NaNs in the backward pass of torch.fft.fft
         cls.contiguous_check(x)
         cls.real_check(x)
 
