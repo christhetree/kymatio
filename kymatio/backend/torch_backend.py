@@ -31,8 +31,8 @@ class ModulusStable(Function):
         zero).
     """
     @staticmethod
-    # def forward(ctx, x):
-    def forward(x: T) -> T:
+    def forward(ctx: Any, x: T) -> T:
+    # def forward(x: T) -> T:
         """Forward pass of the modulus.
 
         This is a static method which does not require an instantiation of the
@@ -53,14 +53,14 @@ class ModulusStable(Function):
             This contains the modulus computed along the last axis, with that
             axis removed.
         """
-        # ctx.p = 2
-        # ctx.dim = -1
-        # ctx.keepdim = False
+        ctx.p = 2
+        ctx.dim = -1
+        ctx.keepdim = False
 
         eps = 1e-12
         output = (x ** 2).sum(-1).sqrt() + eps
 
-        # ctx.save_for_backward(x, output)
+        ctx.save_for_backward(x, output)
 
         return output
 
@@ -99,14 +99,14 @@ class ModulusStable(Function):
 
         return grad_input
 
-    @staticmethod
-    def setup_context(ctx: Any, inputs: Tuple[Any, ...], output: Any) -> None:
-        ctx.p = 2
-        ctx.dim = -1
-        ctx.keepdim = False
-        (x,) = inputs
-        ctx.save_for_backward(x, output)
-        return output
+    # @staticmethod
+    # def setup_context(ctx: Any, inputs: Tuple[Any, ...], output: Any) -> None:
+    #     ctx.p = 2
+    #     ctx.dim = -1
+    #     ctx.keepdim = False
+    #     (x,) = inputs
+    #     ctx.save_for_backward(x, output)
+    #     return output
 
 
 class TorchBackend:
