@@ -114,8 +114,9 @@ class TorchBackend1D(TorchBackend):
         cls.contiguous_check(x)
         cls.complex_check(x)
         X = _fft(x)
-        X_safe = torch.where(X < 0, X - eps, X + eps)
-        return X_safe
+        # X[X > 0].add_(2 * eps)
+        # X.sub_(eps)
+        return X
 
     # we cast to complex here then fft rather than use torch.rfft as torch.rfft is
     # inefficent.
@@ -130,8 +131,9 @@ class TorchBackend1D(TorchBackend):
         )
         x_r[..., 0] = x[..., 0]
         X_r = _fft(x_r)
-        X_r_safe = torch.where(X_r < 0, X_r - eps, X_r + eps)
-        return X_r_safe
+        # X_r[X_r > 0].add_(2 * eps)
+        # X_r.sub_(eps)
+        return X_r
 
     @classmethod
     def irfft(cls, x):
