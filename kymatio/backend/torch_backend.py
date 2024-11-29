@@ -58,9 +58,7 @@ class ModulusStable(Function):
         # ctx.keepdim = False
 
         eps = 1e-12
-        x = torch.where(x < 0, x - eps, x + eps)
-
-        output = (x[...,0] * x[...,0] + x[...,1] * x[...,1]).sqrt()
+        output = (x ** 2).sum(-1).sqrt() + eps
 
         # ctx.save_for_backward(x, output)
 
@@ -107,8 +105,6 @@ class ModulusStable(Function):
         ctx.dim = -1
         ctx.keepdim = False
         (x,) = inputs
-        eps = 1e-12
-        x = torch.where(x < 0, x - eps, x + eps)
         ctx.save_for_backward(x, output)
         return output
 
